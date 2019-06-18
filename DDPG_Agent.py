@@ -86,12 +86,10 @@ class DDPGAgent:
         self.actor_loss = actor_loss.data
         self.critic_loss = critic_loss.data
 
-
     def soft_update(self, model, model_target):
         tau = TAU
         for target_param, local_param in zip(model_target.parameters(), model.parameters()):
             target_param.data.copy_(tau * local_param.data + (1.0 - tau) * target_param.data)
-
 
     def step(self, state, action, reward, next_state, done):
         for i in range(self.n_agents):
@@ -104,6 +102,12 @@ class DDPGAgent:
     def checkpoint(self):
         torch.save(self.actor.state_dict(), self.CHECKPOINT_FOLDER + 'checkpoint_actor.pth')
         torch.save(self.critic.state_dict(), self.CHECKPOINT_FOLDER + 'checkpoint_critic.pth')
+
+    def load(self):
+        self.actor.load_state_dict(torch.load(self.CHECKPOINT_FOLDER + 'checkpoint_actor.pth'))
+        self.actor_target.load_state_dict(torch.load(self.CHECKPOINT_FOLDER + 'checkpoint_actor.pth'))
+        self.critic.load_state_dict(torch.load(self.CHECKPOINT_FOLDER + 'checkpoint_critic.pth'))
+        self.critic_target.load_state_dict(torch.load(self.CHECKPOINT_FOLDER + 'checkpoint_critic.pth'))
 
 
 class ReplayBuffer:
