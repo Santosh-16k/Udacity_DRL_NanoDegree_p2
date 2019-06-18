@@ -27,7 +27,7 @@ However, for this implementation, the first version is used.
 
 ### Solving the Environment
 
-### To Solve the First Version
+#### To Solve the First Version
 
 The task is episodic, and in order to solve the environment, the agent must get an average score of +30 over 100 consecutive episodes.
 
