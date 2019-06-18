@@ -50,3 +50,6 @@ while True:
         break
 
 print("Score : ", score)
+
+# Close the environment
+env.close()

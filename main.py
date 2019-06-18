@@ -68,8 +68,12 @@ for episode in range(n_episodes):
         print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(episode+1, np.mean(scores_window)))
         break
 
+# Close the environment
+env.close()
+
 # Plot scores against number of episodes
 plt.plot(np.arange(1, len(scores) + 1), scores)
 plt.ylabel('Score')
 plt.xlabel('Episode #')
 plt.show()
+
