@@ -27,9 +27,10 @@ state_size = states.shape[1]
 print('There are {} agents. Each observes a state with length: {}'.format(states.shape[0], state_size))
 print('The state for the first agent looks like:', states[0])
 
+# Initialize the agent
 agent = DDPGAgent()
 
-n_episodes = 500                                                # reset the agent noise
+n_episodes = 500
 scores = []
 scores_window = deque(maxlen=100)
 
@@ -54,7 +55,7 @@ for episode in range(n_episodes):
 
         if np.any(dones):                                          # exit loop if episode finished
             break
-    agent.checkpoint()
+    agent.checkpoint()                                              # Save network weights
 
     scores.append(np.mean(score))
     scores_window.append(np.mean(score))
@@ -62,10 +63,12 @@ for episode in range(n_episodes):
     print('\rEpisode: \t{} \tScore: \t{:.2f} \tAverage Score: \t{:.2f}'.format(episode, np.mean(score),
                                                                                np.mean(scores_window)), end="")
 
+    # Stop training if average score for last 100 episodes is more than or equal to 30
     if np.mean(scores_window) >= 30.0:
         print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(episode+1, np.mean(scores_window)))
         break
 
+# Plot scores against number of episodes
 plt.plot(np.arange(1, len(scores) + 1), scores)
 plt.ylabel('Score')
 plt.xlabel('Episode #')

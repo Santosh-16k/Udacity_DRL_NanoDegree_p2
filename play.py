@@ -26,7 +26,7 @@ print('There are {} agents. Each observes a state with length: {}'.format(states
 print('The state for the first agent looks like:', states[0])
 
 agent = DDPGAgent(seed=2)
-agent.load()
+agent.load()                                                    # Load network weights
 
 env_info = env.reset(train_mode=False)[brain_name]            # reset the environment
 states = env_info.vector_observations

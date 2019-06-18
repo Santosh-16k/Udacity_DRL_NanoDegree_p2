@@ -7,8 +7,10 @@ from network import Actor, Critic
 from torch import optim
 import copy
 
+# Select gpu, if available else select cpu
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+# Global parameters
 ACTOR_LR = 0.0001
 CRITIC_LR = 0.0001
 BUFFER_SIZE = 100000
@@ -23,11 +25,12 @@ class DDPGAgent:
         self.action_size = action_size
         self.seed = random.seed(seed)
 
-        ## DDPG specific configuration
+        # DDPG specific configuration
         hidden_size = 128
         self.n_agents = n_agents
         self.CHECKPOINT_FOLDER = './'
 
+        # Defining networks
         self.actor = Actor(state_size, hidden_size, action_size)
         self.actor_target = Actor(state_size, hidden_size, action_size)
 
@@ -37,13 +40,16 @@ class DDPGAgent:
         self.optimizer_actor = optim.Adam(self.actor.parameters(), lr=ACTOR_LR)
         self.optimizer_critic = optim.Adam(self.critic.parameters(), lr=CRITIC_LR)
 
-        #Noise
+        # Noise
         self.noise = OUNoise((self.n_agents, action_size), seed)
 
-        #Initialize replay buffer
+        # Initialize replay buffer
         self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, seed)
 
     def act(self, state, add_noise=True):
+        '''
+        Returns action to be taken based on state provided as the input
+        '''
         state = torch.from_numpy(state).float().to(device)
         self.actor.eval()
         with torch.no_grad():
@@ -57,6 +63,9 @@ class DDPGAgent:
         self.noise.reset()
 
     def learn(self, experiences):
+        '''
+        Trains the actor critic network using experiences
+        '''
         states, actions, rewards, next_states, dones = experiences
 
         # Update Critic
@@ -71,7 +80,7 @@ class DDPGAgent:
         critic_loss.backward()
         self.optimizer_critic.step()
 
-        #Update Actor
+        # Update Actor
         actions_pred = self.actor(states)
         actor_loss = -self.critic(states, actions_pred).mean()
 
@@ -79,7 +88,7 @@ class DDPGAgent:
         actor_loss.backward()
         self.optimizer_actor.step()
 
-        #Updating
+        # Updating the local networks
         self.soft_update(self.critic, self.critic_target)
         self.soft_update(self.actor, self.actor_target)
 
@@ -92,6 +101,9 @@ class DDPGAgent:
             target_param.data.copy_(tau * local_param.data + (1.0 - tau) * target_param.data)
 
     def step(self, state, action, reward, next_state, done):
+        '''
+        Adds experience to memory and learns if the memory contains sufficient samples
+        '''
         for i in range(self.n_agents):
             self.memory.add(state[i,:], action[i,:], reward[i], next_state[i,:], done[i])
 
@@ -100,10 +112,16 @@ class DDPGAgent:
             self.learn(experiences)
 
     def checkpoint(self):
+        '''
+        Saves the actor critic network on disk
+        '''
         torch.save(self.actor.state_dict(), self.CHECKPOINT_FOLDER + 'checkpoint_actor.pth')
         torch.save(self.critic.state_dict(), self.CHECKPOINT_FOLDER + 'checkpoint_critic.pth')
 
     def load(self):
+        '''
+        Loads the actor critic network from disk
+        '''
         self.actor.load_state_dict(torch.load(self.CHECKPOINT_FOLDER + 'checkpoint_actor.pth'))
         self.actor_target.load_state_dict(torch.load(self.CHECKPOINT_FOLDER + 'checkpoint_actor.pth'))
         self.critic.load_state_dict(torch.load(self.CHECKPOINT_FOLDER + 'checkpoint_critic.pth'))
