@@ -40,7 +40,7 @@ DDPG algorithm was implemented, the environment is solved in 388 episodes
 
 A longer duration training resulted in the following plot between rewards and number of episodes
 
-![DDPG Agent](./assets/Prolong Training.png)
+![DDPG Agent](./assets/Prolong%20Training.png)
 
 
 ### Future work
