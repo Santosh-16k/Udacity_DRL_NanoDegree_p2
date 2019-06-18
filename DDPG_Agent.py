@@ -9,11 +9,11 @@ import copy
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-ACTOR_LR = 0.001
-CRITIC_LR = 0.001
+ACTOR_LR = 0.0001
+CRITIC_LR = 0.0001
 BUFFER_SIZE = 100000
 BATCH_SIZE = 128
-TAU = 0.01
+TAU = 0.0001
 GAMMA = 0.99
 
 
@@ -31,8 +31,8 @@ class DDPGAgent:
         self.actor = Actor(state_size, hidden_size, action_size)
         self.actor_target = Actor(state_size, hidden_size, action_size)
 
-        self.critic = Critic(state_size + action_size, hidden_size, 1)
-        self.critic_target = Critic(state_size + action_size, hidden_size, 1)
+        self.critic = Critic(state_size, hidden_size, 1)
+        self.critic_target = Critic(state_size, hidden_size, 1)
 
         self.optimizer_actor = optim.Adam(self.actor.parameters(), lr=ACTOR_LR)
         self.optimizer_critic = optim.Adam(self.critic.parameters(), lr=CRITIC_LR)

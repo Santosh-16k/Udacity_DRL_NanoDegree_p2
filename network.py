@@ -25,14 +25,14 @@ class Critic(nn.Module):
         super(Critic, self).__init__()
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+        action_size = 4
         self.linear1 = nn.Linear(input_size, hidden_size).to(self.device)
-        self.linear2 = nn.Linear(hidden_size, hidden_size).to(self.device)
+        self.linear2 = nn.Linear(hidden_size+action_size, hidden_size).to(self.device)
         self.linear3 = nn.Linear(hidden_size, output_size).to(self.device)
 
     def forward(self, state, action):
-        x = torch.cat((state, action.float()), dim=1)
-        x = F.relu(self.linear1(x))
+        x = F.relu(self.linear1(state))
+        x = torch.cat((x, action.float()), dim=1)
         x = F.relu(self.linear2(x))
         x = self.linear3(x)
 
