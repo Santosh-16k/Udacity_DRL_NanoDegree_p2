@@ -14,6 +14,10 @@ This project is implements Deep Deterministic Policy Gradient Network. The deep 
     2nd Fully connected layer - input: 128 + 4 (action_size) output 128 (ReLU Activation)
     3rd Fully connected layer - input: 128 output: 1 (Linear Activation)
 
+### DDPG Algorithm
+Deep Deterministic Policy Gradient, also known as DDPG, is an off policy algorithm. The system architecture is based on Actor Critic based framework. The actor takes states of the system as inputs and outputs the action to be taken. The critic takes both states and actions as input and outputs the Q-value for the state-action pair.
+
+
 Parameters used in DDPG algorithm:
 
     Learning Rate: 1e-4
